@@ -17,6 +17,8 @@ def show_result(daily_return, benchmark_daily_return, benchmark_title):
     ---------------------------
     return: None
     """
+    daily_return.dropna(inplace=True)
+    benchmark_daily_return.dropna(inplace=True)
     sharpe_ratio, max_drawdown, annual_return, total_return = utils.metrics(daily_return)
     bench_sharpe, bench_max_drawdown, bench_annual_return, bench_total_return = utils.metrics(benchmark_daily_return)
     metrics_dict = {"sharpe": sharpe_ratio, "max_drawdown": max_drawdown,
