@@ -3,9 +3,9 @@ import seaborn as sns
 import pyfolio as pf
 import utils
 
-def show_result(daily_return, benchmark_daily_return, benchmark_title):
+def show_result(daily_return, period, benchmark_daily_return, benchmark_title):
     """
-    plot from metrics dictonary
+    plot from daily return of strategy and benchmark
 
     input
     ---------------------------
@@ -19,8 +19,8 @@ def show_result(daily_return, benchmark_daily_return, benchmark_title):
     """
     daily_return.dropna(inplace=True)
     benchmark_daily_return.dropna(inplace=True)
-    sharpe_ratio, max_drawdown, annual_return, total_return = utils.metrics(daily_return)
-    bench_sharpe, bench_max_drawdown, bench_annual_return, bench_total_return = utils.metrics(benchmark_daily_return)
+    sharpe_ratio, max_drawdown, annual_return, _, total_return = utils.metrics(daily_return, period=period)
+    bench_sharpe, bench_max_drawdown, bench_annual_return, _, bench_total_return = utils.metrics(benchmark_daily_return)
     metrics_dict = {"sharpe": sharpe_ratio, "max_drawdown": max_drawdown,
                     "annual_return": annual_return, "total_return": total_return,
                     "benchmark_sharpe": bench_sharpe, "benchmark_max_drawdown": bench_max_drawdown,
