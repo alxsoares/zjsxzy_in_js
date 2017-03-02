@@ -47,7 +47,7 @@ from bokeh.plotting import figure
 # DATA_DIR = join(dirname(__file__), 'daily')
 DATA_DIR = "C:/Users/jgtzsx01/Documents/workspace/data/asset-class"
 
-DEFAULT_TICKERS = ['bond', 'housing', 'commodity', 'currency', 'money', 'equity']
+DEFAULT_TICKERS = ['bond', 'housing', 'commodity', 'currency', 'money', 'stock']
 
 def nix(val, lst):
     return [x for x in lst if x != val]
@@ -56,7 +56,7 @@ def nix(val, lst):
 def load_ticker(ticker):
     fname = join(DATA_DIR, '%s.csv' % ticker.lower())
     data = pd.read_csv(fname)
-    data["date"] = pd.to_datetime(data["date"], format="%Y%m%d")
+    data["date"] = pd.to_datetime(data["date"], format="%Y-%m-%d")
     data = data.set_index('date')
     return pd.DataFrame({ticker: data.value, ticker+'_returns': data.value.pct_change()})
 
@@ -75,7 +75,7 @@ def get_data(t1, t2):
 # set up widgets
 
 stats = PreText(text='', width=500)
-ticker1 = Select(value='equity', options=nix('equity', DEFAULT_TICKERS))
+ticker1 = Select(value='stock', options=nix('equity', DEFAULT_TICKERS))
 ticker2 = Select(value='bond', options=nix('bond', DEFAULT_TICKERS))
 
 # set up plots
