@@ -18,8 +18,8 @@ from bokeh.palettes import Spectral8
 DATA_DIR = "C:/Users/jgtzsx01/Documents/sheet/zhiyingtianyi portfolio"
 ZHIYING_FILE = "%s/zhiyingtianyi No.1.csv"%(DATA_DIR)
 
-portfolio_selection = [u"智盈添易一号第%d期"%(i) for i in range(4, 18)]
-portfolio_dict = {u"智盈添易一号第%d期"%(i): unicode(i) for i in range(4, 18)}
+portfolio_selection = [u"智盈添易一号第%d期"%(i) for i in range(4, 19)]
+portfolio_dict = {u"智盈添易一号第%d期"%(i): unicode(i) for i in range(4, 19)}
 # ASSETS_COLOR = {asset: COLORS[i] for i, asset in enumerate(portfolio_dict.values())}
 source = ColumnDataSource(data=dict())
 source_value = ColumnDataSource(data=dict(date=[], value=[]))
@@ -113,9 +113,10 @@ update_button.on_click(update_data)
 text = [TextInput(value="", title=name, width=165) for name in portfolio_selection]
 text_row_1 = row(text[0], text[1], text[2], text[3], text[4], text[5], text[6])
 text_row_2 = row(text[7], text[8], text[9], text[10], text[11], text[12], text[13])
+text_row_3 = row(text[14])
 
 controls = widgetbox(time_text, portfolio_select, button)
 table = widgetbox(data_table)
 
-curdoc().add_root(column(row(controls, table), plot_value, update_row, text_row_1, text_row_2))
+curdoc().add_root(column(row(controls, table), plot_value, update_row, text_row_1, text_row_2, text_row_3))
 curdoc().title = u"智盈添易一号"

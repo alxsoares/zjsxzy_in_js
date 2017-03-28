@@ -14,6 +14,7 @@ def merge_to_sheet(date):
 
     fname = "%s/%s.csv"%(DATA_DIR, date)
     if not os.path.exists(fname):
+        print fname
         print("file not exist")
         return
 
@@ -31,7 +32,7 @@ def get_statistics(date):
     zhiying_df = zhiying_df[zhiying_df.index <= end_date]
     if zhiying_df.shape[0] == 0:
         return
-    assets = assets = [unicode(x) for x in range(4, 18)]
+    assets = assets = [unicode(x) for x in range(4, 19)]
 
     for asset in assets:
         df = zhiying_df[[asset]]
@@ -77,5 +78,5 @@ def get_statistics(date):
     df = pd.read_excel('%s/%s.xlsx'%(DATA_DIR, date))
 
 if __name__ == "__main__":
-    # merge_to_sheet("2017-02-16")
-    get_statistics("2017-02-15")
+    # merge_to_sheet("2017-03-02")
+    get_statistics("2017-03-03")

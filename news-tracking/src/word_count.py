@@ -39,7 +39,7 @@ def update_wallst_word_count():
                     text = fp.readlines()
                 time = text[0].split('_')[0]
                 time = time.strip()
-                dt = datetime.datetime.strptime(time, "%Y年%m月%d日 %H:%M:%S")
+                dt = datetime.datetime.strptime(time, "%Y-%m-%d %H:%M")
                 date = dt.strftime("%Y-%m-%d")
 
                 content = " ".join(text[1:])

@@ -26,7 +26,7 @@ source_download = ColumnDataSource(data=dict())
 tools = "pan,wheel_zoom,box_select,reset"
 plot = figure(plot_height=400, plot_width=1000, tools=tools, x_axis_type='datetime')
 plot_absolute = figure(plot_height=400, plot_width=1000, tools=tools, x_axis_type='datetime')
-plot_weighted= figure(plot_height=400, plot_width=1000, tools=tools, x_axis_type='datetime')
+plot_weighted = figure(plot_height=400, plot_width=1000, tools=tools, x_axis_type='datetime')
 
 plot.line('date', 'ts', source=source, line_width=3, line_alpha=0.6)
 plot.circle('date', 'ts', size=1, source=source, color=None, selection_color="orange")
@@ -76,7 +76,7 @@ def update_data():
     dataframe["date"] = pd.to_datetime(dataframe["date"], format="%Y-%m-%d")
     dataframe = dataframe.set_index('date')
     dataframe = dataframe[dataframe.index >= start_date]
-    dataframe = dataframe[dataframe.index <= datetime.datetime.today()]
+    dataframe = dataframe[dataframe.index <= (datetime.datetime.today() - datetime.timedelta(1))]
 
     # 加权值曲线
     df = pd.DataFrame({'ts': dataframe["weighted"]})

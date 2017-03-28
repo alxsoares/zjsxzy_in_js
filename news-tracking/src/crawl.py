@@ -16,51 +16,66 @@ CSRC_DIR = "%s/CSRC"%(DATA_DIR)
 CBRC_DIR = "%s/CBRC"%(DATA_DIR)
 CIRC_DIR = "%s/CIRC"%(DATA_DIR)
 
-def crawl_wallst(start_node=292834):
+def crawl_wallst(start_node=3001228):
     PAGE_NOT_FOUND_FILE = "%s/page_not_found.txt"%(DATA_DIR)
-    with open(PAGE_NOT_FOUND_FILE, 'r') as fp:
-        page_not_found_list = [int(line.strip()) for line in fp.readlines()]
+    # with open(PAGE_NOT_FOUND_FILE, 'r') as fp:
+        # page_not_found_list = [int(line.strip()) for line in fp.readlines()]
     years = [y for y in os.listdir(WALLSTCN_DIR)]
     downloaded = []
     for y in years:
         files = [int(f[:-4]) for f in os.listdir("%s/%s/"%(WALLSTCN_DIR, y))]
         downloaded += files
     print downloaded[:10], downloaded[-10:]
-    print page_not_found_list[:10], page_not_found_list[-10:]
+    # print page_not_found_list[:10], page_not_found_list[-10:]
 
     downloaded = set(downloaded)
     page_not_found_list = set(page_not_found_list)
     print "total articles: %d"%(len(downloaded))
 
-    BASE_URL = "http://wallstreetcn.com/node"
-    conn = httplib.HTTPConnection("wallstreetcn.com")
-    for node_id in range(start_node, 0, -1):
+    BASE_URL = "http://wallstreetcn.com/articles"
+    # conn = httplib.HTTPConnection("wallstreetcn.com")
+    for node_id in range(start_node, 3000000, -1):
         if node_id % 10000 == 0:
             print "iteration %d"%(node_id)
-        if node_id in downloaded or node_id in page_not_found_list:
+        # if node_id in downloaded or node_id in page_not_found_list:
+        if node_id in downloaded:
             continue
         url = "%s/%d"%(BASE_URL, node_id)
         print "checking url %s"%(node_id)
         try:
-            conn.request('GET', url)
-            response = conn.getresponse()
-            text = response.read()
+            # conn.request('GET', url)
+            # response = conn.getresponse()
+            # text = response.read()
+            response = requests.get(url)
+            text = response.text
+            text = text.encode("utf-8")
             soup = BeautifulSoup(text, "html.parser")
             title = soup.title.get_text()
-            if title == "Page Not Found":
-                with open(PAGE_NOT_FOUND_FILE, 'a') as f:
-                    f.write(str(node_id) + '\n')
-                continue
-            content = soup.find(class_="page-article-content").get_text()
-            time = soup.find(class_="title-meta-time").contents[-1]
+            # if title == "Page Not Found":
+                # with open(PAGE_NOT_FOUND_FILE, 'a') as f:
+                    # f.write(str(node_id) + '\n')
+                # continue
+            # if title == u"华尔街见闻 - 华尔街见闻":
+                # with open(PAGE_NOT_FOUND_FILE, 'a') as f:
+                    # f.write(str(node_id) + '\n')
+                # continue
+            content = soup.find(class_="page-article-content")
+            if content == None:
+                content = soup.find(class_="node-article-content")
+            content = content.get_text()
+            # time = soup.find(class_="title-meta-time").contents[-1]
+            # if time == None:
+            time = soup.find(class_='meta-item__text').get_text()
             year = time[:4]
             author = soup.find(class_="author-meta-name")
             if author == None:
                 author = soup.find(class_="title-meta-source")
             if author == None:
+                author = soup.find(class_="article__author__meta__item__name")
+            if author == None:
                 author = "no author"
             else:
-                author = author.get_text()
+                author = author.get_text().lstrip().rstrip()
 
             filename = "%s/%s/%d.txt"%(WALLSTCN_DIR, str(year), node_id)
             if os.path.exists(filename):
@@ -97,13 +112,14 @@ def crawl_csrc(page_id=49):
 
         article_list = soup.find(class_='fl_list')
         for li in article_list.findAll("li"):
+            print li
             item = li.find('a')
             date = li.find('span').string
             if date == None:
                 continue
             year = date.split('-')[0]
             article_url = BASE_URL + item.get("href")[2:]
-            # print article_url
+            print article_url
             if not article_url.endswith(".html"):
                 continue
 
@@ -214,7 +230,7 @@ if __name__ == "__main__":
         if sys.argv[1] == 'WS':
             crawl_wallst()
         elif sys.argv[1] == 'CSRC':
-            crawl_csrc()
+            crawl_csrc(1)
         elif sys.argv[1] == "CBRC":
             crawl_cbrc()
         elif sys.argv[1] == 'CIRC':
