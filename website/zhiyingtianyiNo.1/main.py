@@ -3,9 +3,11 @@
 from os.path import dirname, join
 import os
 import pandas as pd
+import numpy as np
 import datetime
 
-import data_update
+import zhiying.data_update as data_update
+import zhiying.const as const
 
 from bokeh.layouts import row, widgetbox, column
 from bokeh.models import ColumnDataSource, CustomJS
@@ -18,8 +20,8 @@ from bokeh.palettes import Spectral8
 DATA_DIR = "C:/Users/jgtzsx01/Documents/sheet/zhiyingtianyi portfolio"
 ZHIYING_FILE = "%s/zhiyingtianyi No.1.csv"%(DATA_DIR)
 
-portfolio_selection = [u"智盈添易一号第%d期"%(i) for i in range(4, 19)]
-portfolio_dict = {u"智盈添易一号第%d期"%(i): unicode(i) for i in range(4, 19)}
+portfolio_selection = [u"智盈添易一号第%d期"%(i) for i in range(const.first_num_of_portfolio, const.last_num_of_portfolio+1)]
+portfolio_dict = {u"智盈添易一号第%d期"%(i): unicode(i) for i in range(const.first_num_of_portfolio, const.last_num_of_portfolio+1)}
 # ASSETS_COLOR = {asset: COLORS[i] for i, asset in enumerate(portfolio_dict.values())}
 source = ColumnDataSource(data=dict())
 source_value = ColumnDataSource(data=dict(date=[], value=[]))
@@ -58,8 +60,11 @@ def update_plot():
 
     source_value.data = source_value.from_df(pd.DataFrame({'value': df['net value']}))
 
-
 def update_data():
+    for t in text:
+        if t.value == '' or t.value == np.nan:
+            print('null value')
+            return
     values = [t.value for t in text]
     for t in text:
         t.value = ""
@@ -92,7 +97,7 @@ columns = [
     TableColumn(field="volatility", title=u"波动率")
 ]
 
-data_table = DataTable(source=source, columns=columns, width=900)
+data_table = DataTable(source=source, columns=columns, width=900, height=500)
 
 today = datetime.datetime.now()
 yesterday = today - datetime.timedelta(1)
@@ -113,7 +118,7 @@ update_button.on_click(update_data)
 text = [TextInput(value="", title=name, width=165) for name in portfolio_selection]
 text_row_1 = row(text[0], text[1], text[2], text[3], text[4], text[5], text[6])
 text_row_2 = row(text[7], text[8], text[9], text[10], text[11], text[12], text[13])
-text_row_3 = row(text[14])
+text_row_3 = row(text[14], text[15])
 
 controls = widgetbox(time_text, portfolio_select, button)
 table = widgetbox(data_table)

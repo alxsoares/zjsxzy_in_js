@@ -12,10 +12,10 @@ from bokeh.models import ColumnDataSource, NumeralTickFormatter
 from bokeh.models.widgets import Slider, TextInput, TableColumn, DataTable, Select, Button
 from bokeh.plotting import figure
 
-import const
-import data
-import volatility
-import correlation
+import vix.const as const
+import vix.data as data
+import vix.volatility as volatility
+import vix.correlation as correlation
 
 source_vol = ColumnDataSource(data=dict(date=[], vol=[]))
 source_cor = ColumnDataSource(data=dict(date=[], cor=[]))
@@ -49,6 +49,7 @@ def download_data():
     plot_vol.title.text = "Downloading..."
     data.download_all()
     correlation.all_mean()
+    update_all()
     plot_vol.title.text = asset_select.value
 
 asset_selections = const.NAMES.values()

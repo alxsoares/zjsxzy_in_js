@@ -1,0 +1,10 @@
+DATA_DIR = "C:/Users/jgtzsx01/Documents/workspace/data"
+WORD_DIR = 'C:/Users/jgtzsx01/Documents/workspace/data/asset-class/'
+ASSET_DIR = 'C:/Users/jgtzsx01/Documents/workspace/zjsxzy_in_js/website/everyday-update/data/'
+WORD_HEAT_DIR = 'C:/Users/jgtzsx01/Documents/workspace/zjsxzy_in_js/website/word_heat/data'
+# WORD_COUNT_FILE = "%s/wallstreetcn_words/wallstreetcn_word_count.json"%(DATA_DIR)
+WORD_COUNT_FILE = '%s/wallstreetcn_words/word_count.pkl'%(DATA_DIR)
+# TOTAL_WORD_COUNT_FILE = "%s/wallstreetcn_words/wallstreetcn_total_word_count.json"%(DATA_DIR)
+TOTAL_WORD_COUNT_FILE = "%s/wallstreetcn_words/total_word_count.pkl"%(DATA_DIR)
+WALLSTCN_MODEL = "C:/Users/jgtzsx01/Documents/workspace/model/text.model"
+ASSET_CLASS_DIR = "%s/asset-class"%(DATA_DIR)

@@ -10,23 +10,36 @@ import requests
 import sys
 import time as T
 
+import crawl_gov
+
 DATA_DIR = "C:/Users/jgtzsx01/Documents/workspace/data"
 WALLSTCN_DIR = "%s/wallstreetcn"%(DATA_DIR)
 CSRC_DIR = "%s/CSRC"%(DATA_DIR)
 CBRC_DIR = "%s/CBRC"%(DATA_DIR)
 CIRC_DIR = "%s/CIRC"%(DATA_DIR)
 
-def crawl_wallst(start_node=3001228):
+def get_latest_node():
+    url = 'http://wallstreetcn.com'
+    response = requests.get(url)
+    text = response.text.encode('utf-8')
+    soup = BeautifulSoup(text, "html.parser")
+    news = soup.find_all(class_='home-news-item__main')
+    for ele in news:
+        href = ele.find('a').get('href')
+        if href.startswith('/articles/'):
+            return int(href.split('/')[-1])
+
+def crawl_wallst(start_node=3010475):
     PAGE_NOT_FOUND_FILE = "%s/page_not_found.txt"%(DATA_DIR)
-    # with open(PAGE_NOT_FOUND_FILE, 'r') as fp:
-        # page_not_found_list = [int(line.strip()) for line in fp.readlines()]
+    with open(PAGE_NOT_FOUND_FILE, 'r') as fp:
+        page_not_found_list = [int(line.strip()) for line in fp.readlines()]
     years = [y for y in os.listdir(WALLSTCN_DIR)]
     downloaded = []
     for y in years:
         files = [int(f[:-4]) for f in os.listdir("%s/%s/"%(WALLSTCN_DIR, y))]
         downloaded += files
-    print downloaded[:10], downloaded[-10:]
-    # print page_not_found_list[:10], page_not_found_list[-10:]
+    print downloaded[-10:]
+    print page_not_found_list[-10:]
 
     downloaded = set(downloaded)
     page_not_found_list = set(page_not_found_list)
@@ -35,13 +48,13 @@ def crawl_wallst(start_node=3001228):
     BASE_URL = "http://wallstreetcn.com/articles"
     # conn = httplib.HTTPConnection("wallstreetcn.com")
     for node_id in range(start_node, 3000000, -1):
-        if node_id % 10000 == 0:
-            print "iteration %d"%(node_id)
-        # if node_id in downloaded or node_id in page_not_found_list:
-        if node_id in downloaded:
+        # if node_id % 10000 == 0:
+            # print "iteration %d"%(node_id)
+        if node_id in downloaded or node_id in page_not_found_list:
+        # if node_id in downloaded:
             continue
         url = "%s/%d"%(BASE_URL, node_id)
-        print "checking url %s"%(node_id)
+        # print "checking url %s"%(node_id)
         try:
             # conn.request('GET', url)
             # response = conn.getresponse()
@@ -51,14 +64,15 @@ def crawl_wallst(start_node=3001228):
             text = text.encode("utf-8")
             soup = BeautifulSoup(text, "html.parser")
             title = soup.title.get_text()
-            # if title == "Page Not Found":
-                # with open(PAGE_NOT_FOUND_FILE, 'a') as f:
-                    # f.write(str(node_id) + '\n')
-                # continue
-            # if title == u"华尔街见闻 - 华尔街见闻":
-                # with open(PAGE_NOT_FOUND_FILE, 'a') as f:
-                    # f.write(str(node_id) + '\n')
-                # continue
+            if title == "Page Not Found":
+                with open(PAGE_NOT_FOUND_FILE, 'a') as f:
+                    f.write(str(node_id) + '\n')
+                continue
+            if title == u"华尔街见闻 - 华尔街见闻":
+                with open(PAGE_NOT_FOUND_FILE, 'a') as f:
+                    f.write(str(node_id) + '\n')
+                continue
+            print title
             content = soup.find(class_="page-article-content")
             if content == None:
                 content = soup.find(class_="node-article-content")
@@ -94,6 +108,7 @@ def crawl_wallst(start_node=3001228):
             print(str(e))
             T.sleep(10)
 
+'''
 def crawl_csrc(page_id=49):
     BASE_URL = "http://www.csrc.gov.cn/pub/newsite/zjhxwfb/xwdd/"
     CSRC_url = []
@@ -222,21 +237,12 @@ def crawl_circ(page_id=47):
                             continue
                         with open(fname, 'w') as f:
                             f.write(content.encode('utf-8'))
-                    except:
-                        print article_url
+'''
+
+def main():
+    node = get_latest_node()
+    crawl_wallst(node)
+    crawl_gov.update()
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        if sys.argv[1] == 'WS':
-            crawl_wallst()
-        elif sys.argv[1] == 'CSRC':
-            crawl_csrc(1)
-        elif sys.argv[1] == "CBRC":
-            crawl_cbrc()
-        elif sys.argv[1] == 'CIRC':
-            crawl_circ()
-    else:
-        crawl_wallst()
-        crawl_csrc(1)
-        crawl_cbrc(1)
-        crawl_circ(1)
+    main()

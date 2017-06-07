@@ -4,34 +4,15 @@ import json
 import gensim
 import datetime
 import argparse
+import pickle
 import pandas as pd
 
 import utils
+import const
 
 DATA_DIR = "C:/Users/jgtzsx01/Documents/workspace/data"
-WORD_COUNT_FILE = "%s/wallstreetcn_words/wallstreetcn_word_count.json"%(DATA_DIR)
-TOTAL_WORD_COUNT_FILE = "%s/wallstreetcn_words/wallstreetcn_total_word_count.json"%(DATA_DIR)
-
-def get_weekly_word_count():
-    """
-    得到周词频并保存到文件
-    """
-    print("loading word count file...")
-    with open(WORD_COUNT_FILE, 'r') as f:
-        word_count = json.load(f)
-    print("calculating weekly word count...")
-    word_cnt = {}
-    for word in word_count.keys():
-        word_cnt[word] = {}
-        for date, count in word_count[word].iteritems():
-            dt = datetime.datetime.strptime(date, "%Y-%m-%d")
-            (year, week, _) = dt.isocalendar()
-            key = "%d-%d"%(year, week)
-            if not word_cnt.has_key(key):
-                word_cnt[word][key] = 0
-            word_cnt[word][key] += count
-    with open(WEEKLY_WORD_COUNT_FILE, 'w') as f:
-        json.dump(word_cnt, f)
+# WORD_COUNT_FILE = "%s/wallstreetcn_words/wallstreetcn_word_count.json"%(DATA_DIR)
+# TOTAL_WORD_COUNT_FILE = "%s/wallstreetcn_words/wallstreetcn_total_word_count.json"%(DATA_DIR)
 
 def get_total_word_count():
     """
@@ -39,8 +20,10 @@ def get_total_word_count():
     """
     # print("loading weekly word count file...")
     # with open(WEEKLY_WORD_COUNT_FILE, 'r') as f:
-    with open(WORD_COUNT_FILE, 'r') as f:
-        word_cnt = json.load(f)
+    # with open(const.WORD_COUNT_FILE, 'r') as f:
+        # word_cnt = json.load(f)
+    with open(const.WORD_CNT_FILE, 'rb') as fp:
+        word_cnt = pickle.load(fp)
     print("calculating total word count...")
     total_word_count = {}
     for word in word_cnt:
@@ -52,8 +35,10 @@ def get_total_word_count():
     df.index = pd.to_datetime(df['date'], format="%Y-%m-%d")
     df.sort_index(inplace=True)
     df.to_csv("temp.csv", index=False)
-    with open(TOTAL_WORD_COUNT_FILE, 'w') as f:
-        json.dump(total_word_count, f)
+    with open(const.TOTAL_WORD_COUNT_FILE, 'wb') as f:
+        pickle.dump(total_word_count, f)
+    # with open(const.TOTAL_WORD_COUNT_FILE, 'w') as f:
+        # json.dump(total_word_count, f)
 
 if __name__ == "__main__":
     get_total_word_count()
